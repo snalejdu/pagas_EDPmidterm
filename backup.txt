@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parallax Hero</title>
+    <style>
+        /* Basic reset */
+        *,*::before,*::after{box-sizing:border-box}
+        html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;background:#111;color:#fff}
+
+        /* Hero */
+        .hero{position:relative;height:100vh;min-height:520px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+
+        .parallax-layer{position:absolute;top:0;left:0;width:100%;height:140%;background-repeat:no-repeat;background-size:cover;background-position:center;will-change:transform;transform:translate3d(0,0,0)}
+
+        .hero__bg{filter:contrast(1.05) saturate(1.05)}
+        .hero__mid{opacity:0.5}
+
+        .hero__overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.18),rgba(0,0,0,0.6));pointer-events:none}
+
+        .hero__content{position:relative;z-index:5;text-align:center;padding:0 1rem;max-width:1100px}
+        .hero__title{font-size:clamp(2rem,7vw,5rem);line-height:1;margin:0 0 .5rem 0;letter-spacing:-0.02em}
+        .hero__subtitle{font-size:clamp(1rem,2.4vw,1.25rem);opacity:0.95;margin:0}
+        .cta{display:inline-block;margin-top:1.25rem;padding:.75rem 1.5rem;background:#ff6b6b;color:#fff;border-radius:999px;text-decoration:none;font-weight:600;box-shadow:0 6px 18px rgba(0,0,0,0.35)}
+
+        /* Page content below hero so scrolling works */
+        main{padding:4rem 1rem;background:#0f0f10;color:#ddd}
+        .section{max-width:900px;margin:0 auto 3rem auto}
+
+        @media (max-width:600px){
+            .hero{min-height:64vh}
+            .hero__title{font-size:2.2rem}
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero" role="banner" aria-label="Parallax hero">
+        <!-- Furthest background layer (slowest) -->
+        <div class="parallax-layer hero__bg" data-depth="0.18" style="background-image:url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=2000&q=60')" aria-hidden="true"></div>
+
+        <!-- Mid layer -->
+        <div class="parallax-layer hero__mid" data-depth="0.35" style="background-image:url('https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d?auto=format&fit=crop&w=2000&q=60')" aria-hidden="true"></div>
+
+        <div class="hero__overlay" aria-hidden="true"></div>
+
+        <div class="hero__content">
+            <h1 class="hero__title">Amazing Parallax Hero</h1>
+            <p class="hero__subtitle">sample hero parallax effect</p>
+            <a class="cta" href="#content">Explore</a>
+        </div>
+    </header>
+
+    <main id="content">
+        <section class="section">
+            <h2>About Me</h2>
+            <p>I am a student in MDC that is good in manipulating person</p>
+        </section>
+        <section class="section">
+            <h3>More</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
+        </section>
+    </main>
+
+    <script>
+      
+        (function(){
+            const layers = Array.from(document.querySelectorAll('.parallax-layer'));
+            if(!layers.length) return;
+
+            let latestKnownScrollY = 0;
+            let ticking = false;
+
+            function onScroll(){
+                latestKnownScrollY = window.scrollY || window.pageYOffset;
+                requestTick();
+            }
+
+            function requestTick(){
+                if(!ticking){
+                    requestAnimationFrame(update);
+                }
+                ticking = true;
+            }
+
+            function update(){
+                const sc = latestKnownScrollY;
+                layers.forEach(el => {
+                    const depth = parseFloat(el.dataset.depth) || 0;
+                    const movement = Math.round(sc * depth);
+                    el.style.transform = `translate3d(0, ${movement}px, 0)`;
+                });
+                ticking = false;
+            }
+
+            // Initialize positions (in case page isn't at top)
+            onScroll();
+
+            window.addEventListener('scroll', onScroll, {passive:true});
+            window.addEventListener('resize', requestTick);
+        })();
+    </script>
+
+</body>
+</html>
